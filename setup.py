@@ -44,7 +44,7 @@ def main():
 
     packages = find_packages()
     setup(
-        name="Assess Acceptability Judgments",
+        name="assess_acceptability_judgments",
         version=version,
         author="David Beauchemin",
         author_email="david.beauchemin.5@ulaval.ca",
