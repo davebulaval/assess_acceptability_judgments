@@ -1,7 +1,9 @@
-# Network Connector
+# Assess Acceptability Judgments
 
-A minimalist package to handle connection to a distant host using Web protocol.
+A minimalist package to assess acceptability judgments using
 
-Features:
+- [SLOR](https://arxiv.org/pdf/1809.08731v1.pdf)
+- [WPSLOR](https://arxiv.org/pdf/1809.08731v1.pdf)
+- [Negative Cross-Entropy (NCE)](https://arxiv.org/pdf/1809.08731v1.pdf)
+- [Perplexity](https://arxiv.org/pdf/1809.08731v1.pdf)
 
-    - The package add a tin layer around `sshtunnel` and `paramiko` to handle more easely SSH connection
