@@ -18,11 +18,7 @@ def get_version():
         version = f.read().strip()
 
     try:
-        sha = (
-            subprocess.check_output(["git", "rev-parse", "HEAD"])
-            .decode("ascii")
-            .strip()
-        )
+        sha = subprocess.check_output(["git", "rev-parse", "HEAD"]).decode("ascii").strip()
     except Exception:  # pylint: disable=broad-except
         sha = "Unknown"
 

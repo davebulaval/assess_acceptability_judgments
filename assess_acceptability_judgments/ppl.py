@@ -38,9 +38,7 @@ class PPL(LanguageModelFluencyScoreInterface):
             See LanguageModelFluencyScoreInterface for implementation details.
         """
 
-        super().__init__(
-            language_model, device, tokenizer, do_normalization, rescale_bound_ab
-        )
+        super().__init__(language_model, device, tokenizer, do_normalization, rescale_bound_ab)
 
         # Set to [0, 1] since exp(-inf) = 0 and exp(0) = 1.
         self.normalisation_min_score = 0
@@ -59,9 +57,7 @@ class PPL(LanguageModelFluencyScoreInterface):
 
         sentences_len: List[int] = self._compute_sentences_len(sentences_mask)
 
-        sentences_log_prob = self._compute_pm(
-            padded_sentences_words_idx, sentences_mask, batch_logits, sentences_len
-        )
+        sentences_log_prob = self._compute_pm(padded_sentences_words_idx, sentences_mask, batch_logits, sentences_len)
 
         ppl_score: List = list(np.exp(np.divide(sentences_log_prob, sentences_len)))
 

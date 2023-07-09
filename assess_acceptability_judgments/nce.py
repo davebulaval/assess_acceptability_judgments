@@ -40,9 +40,7 @@ class NCE(LanguageModelFluencyScoreInterface):
             See LanguageModelFluencyScoreInterface for implementation details.
         """
 
-        super().__init__(
-            language_model, device, tokenizer, do_normalization, rescale_bound_ab
-        )
+        super().__init__(language_model, device, tokenizer, do_normalization, rescale_bound_ab)
 
         files_name = f"{tokenizer.lower()}"
         if tokenizer.lower() in ("whitespace_llm", "wordpiece"):
@@ -81,9 +79,7 @@ class NCE(LanguageModelFluencyScoreInterface):
 
         sentences_len: List[int] = self._compute_sentences_len(sentences_mask)
 
-        sentences_log_prob = self._compute_pm(
-            padded_sentences_words_idx, sentences_mask, batch_logits, sentences_len
-        )
+        sentences_log_prob = self._compute_pm(padded_sentences_words_idx, sentences_mask, batch_logits, sentences_len)
 
         nce_score: List = list(np.divide(sentences_log_prob, sentences_len))
 

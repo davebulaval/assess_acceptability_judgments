@@ -62,9 +62,7 @@ class SLOR(LanguageModelFluencyScoreInterface):
 
 
         """
-        super().__init__(
-            language_model, device, tokenizer, do_normalization, rescale_bound_ab
-        )
+        super().__init__(language_model, device, tokenizer, do_normalization, rescale_bound_ab)
 
         files_name = f"{tokenizer.lower()}"
         if tokenizer.lower() in ("whitespace_llm", "wordpiece"):
@@ -113,15 +111,11 @@ class SLOR(LanguageModelFluencyScoreInterface):
 
         sentences_len: List[int] = self._compute_sentences_len(sentences_mask)
 
-        sentences_log_prob = self._compute_pm(
-            padded_sentences_words_idx, sentences_mask, batch_logits, sentences_len
-        )
+        sentences_log_prob = self._compute_pm(padded_sentences_words_idx, sentences_mask, batch_logits, sentences_len)
 
         words_log_prob = self._compute_pu(padded_sentences_words_idx, batch_logits)
 
-        slor_score: List = list(
-            np.subtract(sentences_log_prob, words_log_prob) / sentences_len
-        )
+        slor_score: List = list(np.subtract(sentences_log_prob, words_log_prob) / sentences_len)
 
         if self.do_normalization:
             slor_score = self._normalize_scores(
@@ -158,7 +152,5 @@ class SLOR(LanguageModelFluencyScoreInterface):
                 if word_probability is not None:
                     words_log_prob[batch_index] += np.log(word_probability)
                 else:
-                    words_log_prob[batch_index] += np.log(
-                        self.words_probabilities_model.get("<UNK>")
-                    )
+                    words_log_prob[batch_index] += np.log(self.words_probabilities_model.get("<UNK>"))
         return words_log_prob

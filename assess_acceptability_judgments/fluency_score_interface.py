@@ -1,3 +1,6 @@
+# To fix Torch and Pylint error
+# pylint: disable=no-name-in-module
+
 from abc import abstractmethod, ABC
 from typing import Tuple, List
 
@@ -59,9 +62,7 @@ class LanguageModelFluencyScoreInterface(ABC):
 
         add_prefix_space = self._tokenizer_factory(tokenizer=tokenizer)
 
-        self.llm_tokenizer = AutoTokenizer.from_pretrained(
-            language_model, add_prefix_space=add_prefix_space
-        )
+        self.llm_tokenizer = AutoTokenizer.from_pretrained(language_model, add_prefix_space=add_prefix_space)
 
         self.model = AutoModelForMaskedLM.from_pretrained(language_model)
 
@@ -76,9 +77,7 @@ class LanguageModelFluencyScoreInterface(ABC):
     def compute_score(self, sentences: List[str]) -> List[float]:
         pass
 
-    def _llm_batch_processing(
-        self, sentences: List[str]
-    ) -> Tuple[List, List[Tensor], Tensor]:
+    def _llm_batch_processing(self, sentences: List[str]) -> Tuple[List, List[Tensor], Tensor]:
         """
         Processes in batch of a list of sentence. It add padding to the tokenize sequence and process it using a
         LLM to generate the batch logits.
@@ -105,9 +104,7 @@ class LanguageModelFluencyScoreInterface(ABC):
         To compute the len of a sequence using the mask.
         """
         # |S| in equation (1) of article https://arxiv.org/pdf/1809.08731v1.pdf
-        sentences_len: List[int] = [
-            sum(sentence_mask).item() for sentence_mask in sentences_mask
-        ]
+        sentences_len: List[int] = [sum(sentence_mask).item() for sentence_mask in sentences_mask]
         return sentences_len
 
     @staticmethod
@@ -126,35 +123,25 @@ class LanguageModelFluencyScoreInterface(ABC):
 
         sentences_log_prob: List[float] = [0.0] * batch_size
         for batch_index in range(batch_size):
-            for word_position_in_sentence, word_index in enumerate(
-                padded_sentences_words_idx[batch_index]
-            ):
+            for word_position_in_sentence, word_index in enumerate(padded_sentences_words_idx[batch_index]):
                 if sentences_mask[batch_index][word_position_in_sentence]:
                     # We extract the logits at position word_position_in_sentence.
                     # Namely, the prediction of the LLM over all the vocabulary
-                    predicted_logits = batch_logits[batch_index][
-                        word_position_in_sentence
-                    ]
+                    predicted_logits = batch_logits[batch_index][word_position_in_sentence]
 
                     # We transpose the logits into a probability space (i.e. [0, 1])
                     predicted_prob = softmax(predicted_logits, dim=0)
 
                     # We accumulate the sum of the log since the equation is the log of a product.
-                    sentences_log_prob[batch_index] += np.log(
-                        predicted_prob[word_index].item()
-                    )
+                    sentences_log_prob[batch_index] += np.log(predicted_prob[word_index].item())
         return sentences_log_prob
 
     def _llm_tokenizing(self, sentences: List[str]) -> Tuple[LongTensor, FloatTensor]:
         """
         Tokenize and add padding of a batch of sentences using a LLM tokenizer.
         """
-        batch_encoding = self.llm_tokenizer(
-            [sentence.lower() for sentence in sentences], padding="longest"
-        )
-        return LongTensor(batch_encoding.data.get("input_ids")), FloatTensor(
-            batch_encoding.data.get("attention_mask")
-        )
+        batch_encoding = self.llm_tokenizer([sentence.lower() for sentence in sentences], padding="longest")
+        return LongTensor(batch_encoding.data.get("input_ids")), FloatTensor(batch_encoding.data.get("attention_mask"))
 
     def _nltk_tokenizing(self, sentences: List[str]) -> Tuple[LongTensor, FloatTensor]:
         """
@@ -164,24 +151,16 @@ class LanguageModelFluencyScoreInterface(ABC):
 
         tokenize_sentences = []
         for sentence in sentences:
-            tokenize_sentence = self.llm_tokenizer.convert_tokens_to_ids(
-                self.word_tokenizer(sentence.lower())
-            )
+            tokenize_sentence = self.llm_tokenizer.convert_tokens_to_ids(self.word_tokenizer(sentence.lower()))
             tokenize_sentences.append(tokenize_sentence)
 
-        longest_sentence = max(
-            [len(tokenize_sentence) for tokenize_sentence in tokenize_sentences]
-        )
+        longest_sentence = max((len(tokenize_sentence) for tokenize_sentence in tokenize_sentences))
         padded_tokenize_sentences = []
         sentences_mask = []
         for tokenize_sentence in tokenize_sentences:
-            padded_tokenize_sentence = tokenize_sentence + [padding_value] * (
-                longest_sentence - len(tokenize_sentence)
-            )
+            padded_tokenize_sentence = tokenize_sentence + [padding_value] * (longest_sentence - len(tokenize_sentence))
             padded_tokenize_sentences.append(padded_tokenize_sentence)
-            mask = [1] * len(tokenize_sentence) + [0] * (
-                longest_sentence - len(tokenize_sentence)
-            )
+            mask = [1] * len(tokenize_sentence) + [0] * (longest_sentence - len(tokenize_sentence))
             sentences_mask.append(mask)
 
         return LongTensor(padded_tokenize_sentences), FloatTensor(sentences_mask)
@@ -209,9 +188,7 @@ class LanguageModelFluencyScoreInterface(ABC):
         return add_prefix_space
 
     @staticmethod
-    def _normalize_scores(
-        scores: List[float], x_min: int, x_max: int, a: int, b: int
-    ) -> List[float]:
+    def _normalize_scores(scores: List[float], x_min: int, x_max: int, a: int, b: int) -> List[float]:
         """
         Normalize a list of score in [x_min, x_max] bound into [a, b] bound using linear interpolation
         (or min-max normalisation technique).

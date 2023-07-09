@@ -2,4 +2,4 @@ from .nce import *
 from .ppl import *
 from .slor import *
 
-# from .version import __version__
+from .version import __version__
