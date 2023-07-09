@@ -7,7 +7,7 @@ current_file_path = os.path.abspath(os.path.dirname(__file__))
 
 
 def get_readme():
-    readme_file_path = os.path.join(current_file_path, "../README.md")
+    readme_file_path = os.path.join(current_file_path, "README.md")
     with open(readme_file_path, "r", encoding="utf-8") as f:
         return f.read()
 
