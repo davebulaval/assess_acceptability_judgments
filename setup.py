@@ -1,3 +1,4 @@
+import glob
 import os
 import subprocess
 
@@ -68,6 +69,12 @@ def main():
             "Topic :: Scientific/Engineering :: Artificial Intelligence",
         ],
         packages=packages,
+        data_files=[
+            ("resources.nce_scores_distribution", glob.glob('*/*/nce_scores_distribution/*')),
+            ("resources.slor_scores_distribution", glob.glob('*/*/slor_scores_distribution/*')),
+            ("resources.words_probability", glob.glob('*/*/words_probability/*')),
+        ],
+        include_package_data=True,
         install_requires=[
             "transformers",
             "torch",
