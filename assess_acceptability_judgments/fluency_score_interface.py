@@ -104,7 +104,7 @@ class LanguageModelFluencyScoreInterface(ABC):
         To compute the len of a sequence using the mask.
         """
         # |S| in equation (1) of article https://arxiv.org/pdf/1809.08731v1.pdf
-        sentences_len: List[int] = [sum(sentence_mask).item() for sentence_mask in sentences_mask]
+        sentences_len: List[int] = [sentence_mask.sum().item() for sentence_mask in sentences_mask]
         return sentences_len
 
     @staticmethod

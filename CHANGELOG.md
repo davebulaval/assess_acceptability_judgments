@@ -1,5 +1,9 @@
 ## dev
 
+## Beta (0.0.5)
+
+- Improves sentence len compute to be more robust when batch is compose of only empty string.
+
 ## Beta (0.0.4)
 
 - Fix resources path
