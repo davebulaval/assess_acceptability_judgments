@@ -2,7 +2,7 @@
 
 ## Beta (0.0.5)
 
-- Improves sentence len compute to be more robust when batch is compose of only empty string.
+- Improves sentence len compute to be more robust when the batch comprises only empty strings.
 
 ## Beta (0.0.4)
 
