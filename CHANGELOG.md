@@ -1,5 +1,10 @@
 ## dev
 
+## Beta (0.0.4)
+
+- Fix resources path
+- Fix error in `compute_lm` typing
+
 ## Beta (0.0.3)
 
 - Add proper resources

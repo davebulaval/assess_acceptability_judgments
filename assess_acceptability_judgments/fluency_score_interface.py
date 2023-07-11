@@ -111,7 +111,7 @@ class LanguageModelFluencyScoreInterface(ABC):
     def _compute_pm(
         padded_sentences_words_idx: List[List[int]],
         sentences_mask: List[Tensor],
-        batch_logits: List[List[Tensor]],
+        batch_logits: Tensor,
         sentences_len: List[int],
     ) -> List[float]:
         """

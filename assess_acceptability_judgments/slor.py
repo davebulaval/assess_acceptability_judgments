@@ -71,7 +71,7 @@ class SLOR(LanguageModelFluencyScoreInterface):
         data = pkgutil.get_data(
             __name__,
             os.path.join(
-                "../../resources",
+                "./resources",
                 "slor_scores_distribution",
                 f"{files_name}.json",
             ),
@@ -91,7 +91,7 @@ class SLOR(LanguageModelFluencyScoreInterface):
         data = pkgutil.get_data(
             __name__,
             os.path.join(
-                "../../resources",
+                "./resources",
                 "words_probability",
                 f"{files_name}.json",
             ),

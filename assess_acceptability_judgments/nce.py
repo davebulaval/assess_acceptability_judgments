@@ -49,7 +49,7 @@ class NCE(LanguageModelFluencyScoreInterface):
         data = pkgutil.get_data(
             __name__,
             os.path.join(
-                "../../resources",
+                "./resources",
                 "nce_scores_distribution",
                 f"{files_name}.json",
             ),
