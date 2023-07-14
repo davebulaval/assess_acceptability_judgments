@@ -81,6 +81,8 @@ class NCE(LanguageModelFluencyScoreInterface):
 
         sentences_log_prob = self._compute_pm(padded_sentences_words_idx, sentences_mask, batch_logits, sentences_len)
 
+        sentences_log_prob = np.nan_to_num(sentences_log_prob)
+
         nce_score: List = list(np.divide(sentences_log_prob, sentences_len))
 
         if self.do_normalization:

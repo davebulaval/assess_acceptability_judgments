@@ -58,6 +58,7 @@ class PPL(LanguageModelFluencyScoreInterface):
         sentences_len: List[int] = self._compute_sentences_len(sentences_mask)
 
         sentences_log_prob = self._compute_pm(padded_sentences_words_idx, sentences_mask, batch_logits, sentences_len)
+        sentences_log_prob = np.nan_to_num(sentences_log_prob)
 
         ppl_score: List = list(np.exp(np.divide(sentences_log_prob, sentences_len)))
 

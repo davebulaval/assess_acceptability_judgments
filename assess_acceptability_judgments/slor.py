@@ -115,7 +115,10 @@ class SLOR(LanguageModelFluencyScoreInterface):
 
         words_log_prob = self._compute_pu(padded_sentences_words_idx, batch_logits)
 
-        slor_score: List = list(np.subtract(sentences_log_prob, words_log_prob) / sentences_len)
+        sentences_log_prob = np.nan_to_num(sentences_log_prob)
+        words_log_prob = np.nan_to_num(words_log_prob)
+
+        slor_score: List = list(np.divide(np.subtract(sentences_log_prob, words_log_prob), sentences_len))
 
         if self.do_normalization:
             slor_score = self._normalize_scores(

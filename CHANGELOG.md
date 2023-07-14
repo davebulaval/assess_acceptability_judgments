@@ -1,5 +1,9 @@
 ## dev
 
+## Beta (0.0.6)
+
+- Improve scores compute robustness for NaN value.
+
 ## Beta (0.0.5)
 
 - Improves sentence len compute to be more robust when the batch comprises only empty strings.
