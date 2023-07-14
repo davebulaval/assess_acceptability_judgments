@@ -62,9 +62,12 @@ class LanguageModelFluencyScoreInterface(ABC):
 
         add_prefix_space = self._tokenizer_factory(tokenizer=tokenizer)
 
-        self.llm_tokenizer = AutoTokenizer.from_pretrained(language_model, add_prefix_space=add_prefix_space)
-
         self.model = AutoModelForMaskedLM.from_pretrained(language_model)
+        self._model_max_input_size = self.model.config.max_position_embeddings
+
+        self.llm_tokenizer = AutoTokenizer.from_pretrained(
+            language_model, add_prefix_space=add_prefix_space, model_max_length=self._model_max_input_size
+        )
 
         self.model.eval()
         self.device = device
@@ -151,7 +154,9 @@ class LanguageModelFluencyScoreInterface(ABC):
 
         tokenize_sentences = []
         for sentence in sentences:
-            tokenize_sentence = self.llm_tokenizer.convert_tokens_to_ids(self.word_tokenizer(sentence.lower()))
+            tokenize_sentence = self.llm_tokenizer.convert_tokens_to_ids(
+                self.word_tokenizer(sentence.lower())[: self._model_max_input_size]
+            )
             tokenize_sentences.append(tokenize_sentence)
 
         longest_sentence = max((len(tokenize_sentence) for tokenize_sentence in tokenize_sentences))

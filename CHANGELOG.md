@@ -1,5 +1,9 @@
 ## dev
 
+## Beta (0.0.7)
+
+- Fix max sequence length bug for NLTK tokenizer and improve robustness of LLM tokenizer.
+
 ## Beta (0.0.6)
 
 - Improve scores compute robustness for NaN value.
