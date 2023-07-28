@@ -3,3 +3,9 @@ transformers
 torch
 numpy
 nltk
+stanza
+supar
+benepar
+spacy
+spacy-transformers
+progressbar
