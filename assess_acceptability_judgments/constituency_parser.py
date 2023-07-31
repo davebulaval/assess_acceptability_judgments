@@ -1,4 +1,4 @@
-from typing import List, Union, Generator
+from typing import List, Union
 
 import benepar
 import spacy
@@ -8,7 +8,8 @@ from stanza.models.constituency.tree_reader import read_trees
 from supar import Parser
 
 
-# Todo: add encoding of the parse tree using Tree-LSTM: https://github.com/dmlc/dgl/blob/master/examples/pytorch/tree_lstm/README.md
+# Add encoding of the parse tree using Tree-LSTM:
+#  https://github.com/dmlc/dgl/blob/master/examples/pytorch/tree_lstm/README.md
 # similar to https://www.hindawi.com/journals/cin/2022/4096383/
 
 
