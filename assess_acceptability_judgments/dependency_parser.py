@@ -10,9 +10,9 @@ import supar
 from nltk.parse.corenlp import CoreNLPServer, CoreNLPParser
 from supar import Parser
 
+from assess_acceptability_judgments import CACHE_PATH
 from assess_acceptability_judgments.util import DownloadProgressBar
 
-CACHE_PATH = os.path.join(os.path.expanduser("~"), ".cache", "aaj")
 CORENLP_URL = "http://nlp.stanford.edu/software/stanford-corenlp-full-2018-02-27.zip"
 
 
@@ -20,8 +20,9 @@ class DependencyParsingCoreNLP:
     # Path to the corenlp jar models to use for parsing and create Tree
     # As of july 2023, Stanza does not return a Tree by a dictionary. Thus, we use NLTK API
     # that parse and return a dependency parse tree.
-    JAR_FILE_NAME = os.path.join("stanford-corenlp-full-2018-02-27", "stanford-corenlp-3.9.1.jar")
-    JAR_MODEL_FILE_NAME = os.path.join("stanford-corenlp-full-2018-02-27", "stanford-corenlp-3.9.1-models.jar")
+    CORENLP_DIRECTORY = "stanford-corenlp-full-2018-02-27"
+    JAR_FILE_NAME = os.path.join(CORENLP_DIRECTORY, "stanford-corenlp-3.9.1.jar")
+    JAR_MODEL_FILE_NAME = os.path.join(CORENLP_DIRECTORY, "stanford-corenlp-3.9.1-models.jar")
 
     def __init__(self, verbose: bool = True, cache_path: Optional[str] = None) -> None:
         """
