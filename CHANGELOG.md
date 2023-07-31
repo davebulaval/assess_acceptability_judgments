@@ -1,5 +1,10 @@
 ## dev
 
+## Beta (0.0.8)
+
+- Add dependency parser and constituency parser in alpha version. For now, they do not compute a score but only create
+  the parse tree.
+
 ## Beta (0.0.7)
 
 - Fix max sequence length bug for NLTK tokenizer and improve robustness of LLM tokenizer.
