@@ -10,7 +10,7 @@ import supar
 from nltk.parse.corenlp import CoreNLPServer, CoreNLPParser
 from supar import Parser
 
-from . import CACHE_PATH
+from .ressources import CACHE_PATH
 from .util import DownloadProgressBar
 
 CORENLP_URL = "http://nlp.stanford.edu/software/stanford-corenlp-full-2018-02-27.zip"

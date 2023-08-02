@@ -1,5 +1,9 @@
 ## dev
 
+## Beta (0.0.10)
+
+- Fix import problem with CACHE.
+
 ## Beta (0.0.9)
 
 - Refactor parser name that was using "ing" instead or "er".
