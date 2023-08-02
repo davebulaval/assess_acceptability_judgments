@@ -1,5 +1,10 @@
 ## dev
 
+## Beta (0.0.9)
+
+- Refactor parser name that was using "ing" instead or "er".
+- Fix import problem with parsers.
+
 ## Beta (0.0.8)
 
 - Add dependency parser and constituency parser in alpha version. For now, they do not compute a score but only create

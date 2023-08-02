@@ -10,13 +10,13 @@ import supar
 from nltk.parse.corenlp import CoreNLPServer, CoreNLPParser
 from supar import Parser
 
-from assess_acceptability_judgments import CACHE_PATH
-from assess_acceptability_judgments.util import DownloadProgressBar
+from . import CACHE_PATH
+from .util import DownloadProgressBar
 
 CORENLP_URL = "http://nlp.stanford.edu/software/stanford-corenlp-full-2018-02-27.zip"
 
 
-class DependencyParsingCoreNLP:
+class DependencyParserCoreNLP:
     # Path to the corenlp JAR models to use for parsing and create Tree
     # As of july 2023, Stanza does not return a Tree by a dictionary. Thus, we use NLTK API
     # that parse and return a dependency parse tree.
@@ -75,7 +75,7 @@ class DependencyParsingCoreNLP:
             return parsed_trees
 
 
-class DependencyParsingSuPar:
+class DependencyParserSuPar:
     def __init__(self, model: str):
         """
         Create a dependency parsing model that use SuPar constituency parser.

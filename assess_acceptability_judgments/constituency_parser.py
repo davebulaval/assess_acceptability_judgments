@@ -66,7 +66,7 @@ class ConstituencyParserCoreNLP:
         return parsed_trees
 
 
-class ConstituencyParsingSuPar:
+class ConstituencyParserSuPar:
     def __init__(self, model: str) -> None:
         """
         Create a dependency parsing model that use SuPar constituency parser.
@@ -118,7 +118,7 @@ class ConstituencyParsingSuPar:
         return parsed_trees
 
 
-class ConstituencyParsingBeNePar:
+class ConstituencyParserBeNePar:
     def __init__(self, use_larger_model: bool = False) -> None:
         """
         Create a dependency parsing model that use BeNePar constituency parser.
