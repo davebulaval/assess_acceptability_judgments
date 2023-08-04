@@ -23,6 +23,7 @@
   "UCP": "Unlike Coordinated Phrase.",
   "VP": "Vereb Phrase.",
   "WHADJP": "Wh-adjective Phrase.",
+  "WHADVP": "Wh-adverb Phrase.",
   "WHAVP": "Wh-adverb Phrase.",
   "WHNP": "Wh-noun Phrase.",
   "WHPP": "Wh-prepositional Phrase.",
@@ -62,5 +63,6 @@
   "WDT": "Wh-determiner",
   "WP": "Wh-pronoun",
   "WP$": "Possessive wh-pronoun (prolog version WP-S)",
-  "WRB": "Wh-adverb"
+  "WRB": "Wh-adverb",
+  "NP-TMP": "retains -TMP labels on NP with the new identification NP-TMP base on this documentation https://nlp.stanford.edu/nlp/javadoc/javanlp/edu/stanford/nlp/trees/NPTmpRetainingTreeNormalizer.html"
 }
