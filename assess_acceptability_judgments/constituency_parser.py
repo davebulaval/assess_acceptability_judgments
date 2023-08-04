@@ -1,3 +1,6 @@
+# Error with CoreNLP init
+# pylint: disable=unexpected-keyword-arg
+
 import json
 import os
 import pkgutil
