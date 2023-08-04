@@ -9,6 +9,7 @@ import nltk
 import supar
 from nltk.parse.corenlp import CoreNLPServer, CoreNLPDependencyParser
 from supar import Parser
+from tqdm import tqdm
 
 from .ressources import CACHE_PATH, CORENLP_URL
 from .util import DownloadProgressBar
@@ -28,7 +29,7 @@ class DependencyParserCoreNLP:
         model from CoreNLP (i.e. 2018) as suggest by this Wiki
         https://github.com/nltk/nltk/wiki/Stanford-CoreNLP-API-in-NLTK.
 
-        :param verbose: (bool) Either or not to be verbose during the download of CoreNLP model.
+        :param verbose: (bool) Either or not to be verbose during the download of CoreNLP model. Default to `True`.
         :param cache_path: (Optional[str]) Optional parameter to set a cache path to download the CoreNP model to.
             If the cache_path is not set, the model are downloaded in the default cache path i.e. `'.cache/aaj'`.
         """
@@ -39,8 +40,9 @@ class DependencyParserCoreNLP:
         self.jar_file_name = os.path.join(cache_path, self.JAR_FILE_NAME)
         self.jar_model_file_name = os.path.join(cache_path, self.JAR_MODEL_FILE_NAME)
 
+        self.verbose = verbose
         if not os.path.exists(self.jar_file_name) and not os.path.exists(self.jar_model_file_name):
-            if verbose:
+            if self.verbose:
                 reporthook = DownloadProgressBar()
             else:
                 reporthook = None
@@ -67,6 +69,9 @@ class DependencyParserCoreNLP:
         with CoreNLPServer(path_to_jar=self.jar_file_name, path_to_models_jar=self.jar_model_file_name) as server:
             parser = CoreNLPDependencyParser(url=server.url)
             parsed_trees = []
+            if self.verbose:
+                sentences = tqdm(sentences, total=len(sentences), desc="Processing dataset into trees")
+
             for sentence in sentences:
                 if len(sentence) > 0:
                     parsed_trees.append(list(parser.raw_parse(sentence))[0].tree())
@@ -76,7 +81,7 @@ class DependencyParserCoreNLP:
 
 
 class DependencyParserSuPar:
-    def __init__(self, model: str):
+    def __init__(self, model: str, verbose: bool = True):
         """
         Create a dependency parsing model that use SuPar constituency parser.
 
@@ -87,9 +92,12 @@ class DependencyParserSuPar:
             - `'crf'` (https://aclanthology.org/2020.acl-main.302/),
             - `'crf2o'` (https://aclanthology.org/2020.acl-main.302/), and
             - `'vi'` (https://aclanthology.org/2020.aacl-main.12).
+        :param verbose: (bool) Either or not to be verbose during the download of CoreNLP model. Default to `True`.
         """
 
         self.process_pipeline = Parser.load(f'{model}-dep-en')
+
+        self.verbose = verbose
 
     def get_tree(self, sentence: supar.utils.Dataset) -> List[conllu.models.TokenTree]:
         """
@@ -117,6 +125,9 @@ class DependencyParserSuPar:
         :return: A list of SuPar parse tree.
         """
         parsed_trees = []
+
+        if self.verbose:
+            sentences = tqdm(sentences, total=len(sentences), desc="Processing dataset into trees")
 
         for sentence in sentences:
             if len(sentence) > 0:

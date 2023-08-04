@@ -87,6 +87,7 @@ def main():
             "spacy-transformers",
             "progressbar",
             "conllu",
+            "tqdm",
         ],
         python_requires=">=3.8",
         description="A library for assessing acceptability judgments",

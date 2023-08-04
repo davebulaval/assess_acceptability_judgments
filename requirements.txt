@@ -10,3 +10,4 @@ spacy
 spacy-transformers
 progressbar
 conllu
+tqdm

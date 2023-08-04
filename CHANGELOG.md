@@ -1,5 +1,9 @@
 ## dev
 
+## Beta (0.0.12)
+
+- Add TQDM into `tree_parser_sentences` methods.
+
 ## Beta (0.0.11)
 
 - Fix the error in `DependencyParserCoreNLP` that returns a constituency tree rather than a dependency tree.

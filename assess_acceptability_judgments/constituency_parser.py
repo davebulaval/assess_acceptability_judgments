@@ -12,6 +12,7 @@ import supar
 from nltk.parse.corenlp import CoreNLPServer, CoreNLPParser
 from stanza.models.constituency.tree_reader import read_trees
 from supar import Parser
+from tqdm import tqdm
 
 from .ressources import CACHE_PATH, CORENLP_URL
 from .util import DownloadProgressBar
@@ -36,7 +37,7 @@ class ConstituencyParserCoreNLP:
         model from CoreNLP (i.e. 2018) as suggest by this Wiki
         https://github.com/nltk/nltk/wiki/Stanford-CoreNLP-API-in-NLTK.
 
-        :param verbose: (bool) Either or not to be verbose during the download of CoreNLP model.
+        :param verbose: (bool) Either or not to be verbose during the download of CoreNLP model. Default to `True`.
         :param cache_path: (Optional[str]) Optional parameter to set a cache path to download the CoreNP model to.
             If the cache_path is not set, the model are downloaded in the default cache path i.e. `'.cache/aaj'`.
         """
@@ -47,8 +48,9 @@ class ConstituencyParserCoreNLP:
         self.jar_file_name = os.path.join(cache_path, self.JAR_FILE_NAME)
         self.jar_model_file_name = os.path.join(cache_path, self.JAR_MODEL_FILE_NAME)
 
+        self.verbose = verbose
         if not os.path.exists(self.jar_file_name) and not os.path.exists(self.jar_model_file_name):
-            if verbose:
+            if self.verbose:
                 reporthook = DownloadProgressBar()
             else:
                 reporthook = None
@@ -73,16 +75,19 @@ class ConstituencyParserCoreNLP:
         with CoreNLPServer(path_to_jar=self.jar_file_name, path_to_models_jar=self.jar_model_file_name) as server:
             parser = CoreNLPParser(url=server.url)
             parsed_trees = []
+            if self.verbose:
+                sentences = tqdm(sentences, total=len(sentences), desc="Processing dataset into trees")
             for sentence in sentences:
                 if len(sentence) > 0:
                     parsed_trees.append(list(parser.raw_parse(sentence)))
                 else:
                     parsed_trees.append([""])
+
             return parsed_trees
 
 
 class ConstituencyParserSuPar:
-    def __init__(self, model: str) -> None:
+    def __init__(self, model: str, verbose: bool = True) -> None:
         """
         Create a dependency parsing model that use SuPar constituency parser.
 
@@ -93,9 +98,12 @@ class ConstituencyParserSuPar:
             - `'crf'` (https://www.ijcai.org/Proceedings/2020/560/),
             - `'tt'` (https://aclanthology.org/2020.acl-main.557), and
             - `'vi'` (https://aclanthology.org/2020.aacl-main.12).
+        :param verbose: (bool) Either or not to be verbose during the download of CoreNLP model.  Default to `True`.
         """
 
         self.process_pipeline = Parser.load(f'{model}-con-en')
+
+        self.verbose = verbose
 
     def get_tree(self, sentence: supar.utils.Dataset) -> List[supar.utils.transform.TreeSentence]:
         """
@@ -124,6 +132,9 @@ class ConstituencyParserSuPar:
         """
         parsed_trees = []
 
+        if self.verbose:
+            sentences = tqdm(sentences, total=len(sentences), desc="Processing dataset into trees")
+
         for sentence in sentences:
             if len(sentence) > 0:
                 process_documents = self.process_sentences(sentence)
@@ -134,7 +145,7 @@ class ConstituencyParserSuPar:
 
 
 class ConstituencyParserBeNePar:
-    def __init__(self, use_larger_model: bool = False) -> None:
+    def __init__(self, use_larger_model: bool = False, verbose: bool = True) -> None:
         """
         Create a dependency parsing model that use BeNePar constituency parser.
 
@@ -143,6 +154,7 @@ class ConstituencyParserBeNePar:
 
         :param use_larger_model: (bool) either or not to use the larger model version. Larger model tak
             more RAM/GPU RAM than smaller one. See SpaCy and BeNePar documentation for details.
+        :param verbose: (bool) Either or not to be verbose during the download of CoreNLP model. Default to `True`.
         """
 
         if use_larger_model:
@@ -156,6 +168,8 @@ class ConstituencyParserBeNePar:
         benepar.download(benepar_model)
         self.process_pipeline = spacy.load(spacy_model)
         self.process_pipeline.add_pipe("benepar", config={"model": benepar_model})
+
+        self.verbose = verbose
 
     def get_tree(self, sentence: spacy.tokens.Span) -> stanza.models.constituency.parse_tree.Tree:
         """
@@ -189,6 +203,12 @@ class ConstituencyParserBeNePar:
         process_documents = self.process_sentences(sentences)
 
         parsed_trees = []
+
+        if self.verbose:
+            process_documents = tqdm(
+                process_documents, total=len(process_documents), desc="Processing dataset into trees"
+            )
+
         for process_document in process_documents:
             if len(process_document.text) > 0:
                 doc_parsed_trees = []
