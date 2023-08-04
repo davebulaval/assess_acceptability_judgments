@@ -1,5 +1,9 @@
 ## dev
 
+## Beta (0.0.15)
+
+- Add missing tags in `ConstituencyParserCoreNLP`.
+
 ## Beta (0.0.14)
 
 - BugFix interface naming (`CoreNLPParser`) that was colliding with NLTK same class name.
