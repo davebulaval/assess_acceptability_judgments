@@ -1,11 +1,20 @@
-from typing import List, Union
+import os
+import zipfile
+from pathlib import Path
+from typing import List, Union, Optional
+from urllib.request import urlretrieve
 
 import benepar
+import nltk
 import spacy
 import stanza
 import supar
+from nltk.parse.corenlp import CoreNLPServer, CoreNLPParser
 from stanza.models.constituency.tree_reader import read_trees
 from supar import Parser
+
+from .ressources import CACHE_PATH, CORENLP_URL
+from .util import DownloadProgressBar
 
 
 # Add encoding of the parse tree using Tree-LSTM:
@@ -14,56 +23,62 @@ from supar import Parser
 
 
 class ConstituencyParserCoreNLP:
-    def __init__(self) -> None:
+    # Path to the corenlp JAR models to use for parsing and create Tree
+    # As of july 2023, Stanza does not return a Tree by a dictionary. Thus, we use NLTK API
+    # that parse and return a dependency parse tree.
+    CORENLP_DIRECTORY = "stanford-corenlp-full-2018-02-27"
+    JAR_FILE_NAME = os.path.join(CORENLP_DIRECTORY, "stanford-corenlp-3.9.1.jar")
+    JAR_MODEL_FILE_NAME = os.path.join(CORENLP_DIRECTORY, "stanford-corenlp-3.9.1-models.jar")
+
+    def __init__(self, verbose: bool = True, cache_path: Optional[str] = None) -> None:
         """
-         Create a dependency parsing model that use Stanza constituency parser.
+         Create a constituency parsing model that use CoreNLP constituency parser. To do so, we download the latest
+        model from CoreNLP (i.e. 2018) as suggest by this Wiki
+        https://github.com/nltk/nltk/wiki/Stanford-CoreNLP-API-in-NLTK.
 
-        Base on the Stanza documentation https://stanfordnlp.github.io/stanza/constituency.html#simple-code-example.
+        :param verbose: (bool) Either or not to be verbose during the download of CoreNLP model.
+        :param cache_path: (Optional[str]) Optional parameter to set a cache path to download the CoreNP model to.
+            If the cache_path is not set, the model are downloaded in the default cache path i.e. `'.cache/aaj'`.
         """
 
-        self.process_pipeline = stanza.Pipeline(lang='en', processors='tokenize,pos,constituency')
+        if cache_path is None:
+            cache_path = CACHE_PATH
 
-    def get_tree(self, sentence: stanza.models.common.doc.Sentence) -> stanza.models.constituency.parse_tree.Tree:
-        """
-        Interface method to get the tree depending on the sentence object.
+        self.jar_file_name = os.path.join(cache_path, self.JAR_FILE_NAME)
+        self.jar_model_file_name = os.path.join(cache_path, self.JAR_MODEL_FILE_NAME)
 
-        :param sentence: A Stanza Sentence.
-        :return: Return a Stanza Tree.
-        """
-        return sentence.constituency
+        if not os.path.exists(self.jar_file_name) and not os.path.exists(self.jar_model_file_name):
+            if verbose:
+                reporthook = DownloadProgressBar()
+            else:
+                reporthook = None
 
-    def process_sentences(self, sentences: List[str]) -> List[stanza.Document]:
-        """
-        Interface method to process sentences.
+            # Download zipped file with verbose report
+            local_filename, _ = urlretrieve(CORENLP_URL, reporthook=reporthook)
 
-        :param sentences: A list of sentences.
-        :return: Return a list of Stanza document.
-        """
-        return self.process_pipeline.bulk_process(sentences)
+            # Create .cache directory if it does not exist
+            Path(cache_path).mkdir(parents=True, exist_ok=True)
 
-    def tree_parser_sentences(
-        self, sentences: List[str]
-    ) -> List[List[Union[str, stanza.models.constituency.parse_tree.Tree]]]:
+            # Unzip the file into the cache directory
+            with zipfile.ZipFile(local_filename, "r") as f:
+                f.extractall(cache_path)
+
+    def tree_parser_sentences(self, sentences: List[str]) -> List[List[Union[str, nltk.tree.tree.Tree]]]:
         """
         Method to parse sentences into constituency tree.
 
         :param sentences: (list) A list of sentence to parse into trees.
         :return: A list of Stanza parse tree.
         """
-        process_documents = self.process_sentences(sentences)
-
-        parsed_trees = []
-        for doc in process_documents:
-            if len(doc.sentences) > 0:
-                doc_parsed_trees = []
-                for sentence in doc.sentences:
-                    parsed_tree = self.get_tree(sentence)
-                    doc_parsed_trees.append(parsed_tree)
-                parsed_trees.append(doc_parsed_trees)
-            else:
-                parsed_trees.append([""])
-
-        return parsed_trees
+        with CoreNLPServer(path_to_jar=self.jar_file_name, path_to_models_jar=self.jar_model_file_name) as server:
+            parser = CoreNLPParser(url=server.url)
+            parsed_trees = []
+            for sentence in sentences:
+                if len(sentence) > 0:
+                    parsed_trees.append(list(parser.raw_parse(sentence)))
+                else:
+                    parsed_trees.append([""])
+            return parsed_trees
 
 
 class ConstituencyParserSuPar:

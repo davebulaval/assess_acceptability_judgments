@@ -7,13 +7,11 @@ from urllib.request import urlretrieve
 import conllu
 import nltk
 import supar
-from nltk.parse.corenlp import CoreNLPServer, CoreNLPParser
+from nltk.parse.corenlp import CoreNLPServer, CoreNLPDependencyParser
 from supar import Parser
 
-from .ressources import CACHE_PATH
+from .ressources import CACHE_PATH, CORENLP_URL
 from .util import DownloadProgressBar
-
-CORENLP_URL = "http://nlp.stanford.edu/software/stanford-corenlp-full-2018-02-27.zip"
 
 
 class DependencyParserCoreNLP:
@@ -57,7 +55,9 @@ class DependencyParserCoreNLP:
             with zipfile.ZipFile(local_filename, "r") as f:
                 f.extractall(cache_path)
 
-    def tree_parser_sentences(self, sentences: List[str]) -> List[List[Union[str, nltk.tree.tree.Tree]]]:
+    def tree_parser_sentences(
+        self, sentences: List[str]
+    ) -> List[List[Union[str, nltk.parse.dependencygraph.DependencyGraph]]]:
         """
         Method to parse sentences into dependency tree.
 
@@ -65,11 +65,11 @@ class DependencyParserCoreNLP:
         :return: A list of NLTK dependency parse tree.
         """
         with CoreNLPServer(path_to_jar=self.jar_file_name, path_to_models_jar=self.jar_model_file_name) as server:
-            parser = CoreNLPParser(url=server.url)
+            parser = CoreNLPDependencyParser(url=server.url)
             parsed_trees = []
             for sentence in sentences:
                 if len(sentence) > 0:
-                    parsed_trees.append(list(parser.raw_parse(sentence)))
+                    parsed_trees.append(list(parser.raw_parse(sentence))[0].tree())
                 else:
                     parsed_trees.append([""])
             return parsed_trees
