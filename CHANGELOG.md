@@ -2,8 +2,8 @@
 
 ## Beta (0.0.11)
 
-- Fix error in `DependencyParserCoreNLP` that returning a constituency tree rather than a dependency tree.
-- `ConstituencyParserCoreNLP` now use CoreNLP like `DependencyParserCoreNLP` instead of Stanza.
+- Fix the error in `DependencyParserCoreNLP` that returns a constituency tree rather than a dependency tree.
+- `ConstituencyParserCoreNLP` now uses CoreNLP like `DependencyParserCoreNLP` instead of Stanza.
 
 ## Beta (0.0.10)
 
