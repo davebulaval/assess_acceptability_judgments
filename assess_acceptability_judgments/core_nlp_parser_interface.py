@@ -11,7 +11,7 @@ from .ressources import CACHE_PATH, CORENLP_URL
 from .util import DownloadProgressBar
 
 
-class CoreNLPParser:
+class CoreNLPParserInterface:
     # Path to the corenlp JAR models to use for parsing and create Tree
     # As of july 2023, Stanza does not return a Tree by a dictionary. Thus, we use NLTK API
     # that parse and return a dependency parse tree.

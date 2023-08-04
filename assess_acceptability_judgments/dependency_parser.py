@@ -10,10 +10,10 @@ from nltk.parse.corenlp import CoreNLPServer, CoreNLPDependencyParser
 from supar import Parser
 from tqdm import tqdm
 
-from .core_nlp_parser_interface import CoreNLPParser
+from .core_nlp_parser_interface import CoreNLPParserInterface
 
 
-class DependencyParserCoreNLP(CoreNLPParser):
+class DependencyParserCoreNLP(CoreNLPParserInterface):
     def __init__(self, verbose: bool = True, cache_path: Optional[str] = None) -> None:
         """
         Create a dependency parsing model that use CoreNLP dependency parser. To do so, we download the latest

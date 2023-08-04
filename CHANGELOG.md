@@ -1,5 +1,9 @@
 ## dev
 
+## Beta (0.0.14)
+
+- BugFix interface naming (`CoreNLPParser`) that was colliding with NLTK same class name.
+
 ## Beta (0.0.13)
 
 - Fix `DependencyParserCoreNLP` `tree_parser_sentences` method that was not returning proper graph.

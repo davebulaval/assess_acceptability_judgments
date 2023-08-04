@@ -1,6 +1,3 @@
-# Error with CoreNLP init
-# pylint: disable=unexpected-keyword-arg
-
 import json
 import os
 import pkgutil
@@ -16,7 +13,7 @@ from stanza.models.constituency.tree_reader import read_trees
 from supar import Parser
 from tqdm import tqdm
 
-from .core_nlp_parser_interface import CoreNLPParser
+from .core_nlp_parser_interface import CoreNLPParserInterface
 
 
 # Add encoding of the parse tree using Tree-LSTM:
@@ -24,7 +21,7 @@ from .core_nlp_parser_interface import CoreNLPParser
 # similar to https://www.hindawi.com/journals/cin/2022/4096383/
 
 
-class ConstituencyParserCoreNLP(CoreNLPParser):
+class ConstituencyParserCoreNLP(CoreNLPParserInterface):
     def __init__(self, verbose: bool = True, cache_path: Optional[str] = None) -> None:
         """
          Create a constituency parsing model that use CoreNLP constituency parser. To do so, we download the latest
