@@ -73,6 +73,8 @@ def main():
             ("resources.nce_scores_distribution", glob.glob('*/*/nce_scores_distribution/*')),
             ("resources.slor_scores_distribution", glob.glob('*/*/slor_scores_distribution/*')),
             ("resources.words_probability", glob.glob('*/*/words_probability/*')),
+            ("resources", glob.glob('*/*/treebank_tags_mapping.json')),
+            ("resources", glob.glob('*/*/conll_u_tags_mapping.json')),
         ],
         include_package_data=True,
         install_requires=[

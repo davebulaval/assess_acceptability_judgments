@@ -1,8 +1,7 @@
+import json
 import os
-import zipfile
-from pathlib import Path
+import pkgutil
 from typing import List, Optional, Union
-from urllib.request import urlretrieve
 
 import conllu
 import nltk
@@ -11,51 +10,33 @@ from nltk.parse.corenlp import CoreNLPServer, CoreNLPDependencyParser
 from supar import Parser
 from tqdm import tqdm
 
-from .ressources import CACHE_PATH, CORENLP_URL
-from .util import DownloadProgressBar
+from .core_nlp_parser_interface import CoreNLPParser
 
 
-class DependencyParserCoreNLP:
-    # Path to the corenlp JAR models to use for parsing and create Tree
-    # As of july 2023, Stanza does not return a Tree by a dictionary. Thus, we use NLTK API
-    # that parse and return a dependency parse tree.
-    CORENLP_DIRECTORY = "stanford-corenlp-full-2018-02-27"
-    JAR_FILE_NAME = os.path.join(CORENLP_DIRECTORY, "stanford-corenlp-3.9.1.jar")
-    JAR_MODEL_FILE_NAME = os.path.join(CORENLP_DIRECTORY, "stanford-corenlp-3.9.1-models.jar")
-
+class DependencyParserCoreNLP(CoreNLPParser):
     def __init__(self, verbose: bool = True, cache_path: Optional[str] = None) -> None:
         """
         Create a dependency parsing model that use CoreNLP dependency parser. To do so, we download the latest
         model from CoreNLP (i.e. 2018) as suggest by this Wiki
         https://github.com/nltk/nltk/wiki/Stanford-CoreNLP-API-in-NLTK.
 
+        The tags are the Universal Dependencies tag V1 available here
+        https://universaldependencies.org/docsv1/u/dep/index.html.
+
         :param verbose: (bool) Either or not to be verbose during the download of CoreNLP model. Default to `True`.
         :param cache_path: (Optional[str]) Optional parameter to set a cache path to download the CoreNP model to.
             If the cache_path is not set, the model are downloaded in the default cache path i.e. `'.cache/aaj'`.
         """
+        super().__init__(verbose, cache_path)
 
-        if cache_path is None:
-            cache_path = CACHE_PATH
-
-        self.jar_file_name = os.path.join(cache_path, self.JAR_FILE_NAME)
-        self.jar_model_file_name = os.path.join(cache_path, self.JAR_MODEL_FILE_NAME)
-
-        self.verbose = verbose
-        if not os.path.exists(self.jar_file_name) and not os.path.exists(self.jar_model_file_name):
-            if self.verbose:
-                reporthook = DownloadProgressBar()
-            else:
-                reporthook = None
-
-            # Download zipped file with verbose report
-            local_filename, _ = urlretrieve(CORENLP_URL, reporthook=reporthook)
-
-            # Create .cache directory if it does not exist
-            Path(cache_path).mkdir(parents=True, exist_ok=True)
-
-            # Unzip the file into the cache directory
-            with zipfile.ZipFile(local_filename, "r") as f:
-                f.extractall(cache_path)
+        data = pkgutil.get_data(
+            __name__,
+            os.path.join(
+                "./resources",
+                "conll_u_tags_mapping.json",
+            ),
+        )
+        self._tags_mapping = json.loads(data.decode("utf-8"))
 
     def tree_parser_sentences(
         self, sentences: List[str]
@@ -74,7 +55,9 @@ class DependencyParserCoreNLP:
 
             for sentence in sentences:
                 if len(sentence) > 0:
-                    parsed_trees.append(list(parser.raw_parse(sentence))[0].tree())
+                    # raw_parse return a list iterator, so we convert it into a list
+                    # Once converted, it includes a dependency graph inside (seen as a defaultdict).
+                    parsed_trees.append(list(parser.raw_parse(sentence)))
                 else:
                     parsed_trees.append([""])
             return parsed_trees

@@ -1,5 +1,10 @@
 ## dev
 
+## Beta (0.0.13)
+
+- Fix `DependencyParserCoreNLP` `tree_parser_sentences` method that was not returning proper graph.
+- Add parsed tree tags to `DependencyParserCoreNLP` and `ConstituencyParserCoreNLP`.
+
 ## Beta (0.0.12)
 
 - Add TQDM into `tree_parser_sentences` methods.
