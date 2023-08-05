@@ -82,5 +82,7 @@
   "*": "'Understood' subject or infinitive or imperative",
   "0": "Zero variant of that in subordinate clauses",
   "T": "Trace - marks position where moved wh-constituent is interpreted",
-  "NUL": "Marks position where preposition is interpreted in pied-piping contexts"
+  "NUL": "Marks position where preposition is interpreted in pied-piping contexts",
+  "NML": "Could not find the meaning of this tag.",
+  "HYPH": "Hyphen."
 }

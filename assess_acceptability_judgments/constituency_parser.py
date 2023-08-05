@@ -72,7 +72,7 @@ class ConstituencyParserCoreNLP(CoreNLPParserInterface):
                     memory='16G',
                     properties=custom_args,
                     output_format="json",
-                    be_quiet=self.verbose,
+                    be_quiet=not self.verbose,
                 ) as client:
                     ann = client.annotate(sentence)
 
