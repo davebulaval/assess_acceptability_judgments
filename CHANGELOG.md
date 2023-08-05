@@ -1,3 +1,8 @@
+## Beta (0.0.24)
+
+- Change the approach to pass endpoint and start_server as keyword arguments in the parse method
+  for `ConstituencyParserCoreNLP`.
+
 ## Beta (0.0.23)
 
 - `ConstituencyParserCoreNLP` has now the start_server option to start if not already started. Based
