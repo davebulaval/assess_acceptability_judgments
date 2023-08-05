@@ -21,7 +21,7 @@ from .core_nlp_parser_interface import CoreNLPParserInterface
 
 
 class ConstituencyParserCoreNLP(CoreNLPParserInterface):
-    def __init__(self, verbose: bool = True, cache_path: Optional[str] = None) -> None:
+    def __init__(self, verbose: bool = True, cache_path: Optional[str] = None, endpoint: Optional[str] = None) -> None:
         """
          Create a constituency parsing model that use CoreNLP constituency parser. To do so, we download the latest
         model from CoreNLP (i.e. 2018) as suggest by this Wiki
@@ -32,6 +32,8 @@ class ConstituencyParserCoreNLP(CoreNLPParserInterface):
         :param verbose: (bool) Either or not to be verbose during the download of CoreNLP model. Default to `True`.
         :param cache_path: (Optional[str]) Optional parameter to set a cache path to download the CoreNP model to.
             If the cache_path is not set, the model are downloaded in the default cache path i.e. `'.cache/aaj'`.
+        :param endpoint: (Optional[str]) Optional parameter to set up a different endpoint for the CoreNLP server.
+            The default value is set None to ue Stanza default value 'http://localhost:9000'.
         """
         super().__init__(verbose, cache_path)
 
@@ -44,6 +46,7 @@ class ConstituencyParserCoreNLP(CoreNLPParserInterface):
         )
         self._tags_mapping = json.loads(data.decode("utf-8"))
 
+        self.endpoint = endpoint
         stanza.install_corenlp()
 
     def tree_parser_sentences(self, sentences: List[str], binary_tree: bool = False) -> List[List[str]]:
@@ -56,6 +59,10 @@ class ConstituencyParserCoreNLP(CoreNLPParserInterface):
         :return: A list of str tree written in Standford constituency parsed tree format using bracket (i.e. "()").
         """
         # Base on the documentation and this issue https://github.com/stanfordnlp/stanza/issues/478.
+
+        # We use Stanza default value
+        endpoint = self.endpoint if self.endpoint is not None else "http://localhost:9000"
+
         custom_args = {}
         extraction_key = "parse"
         if binary_tree:
@@ -74,6 +81,7 @@ class ConstituencyParserCoreNLP(CoreNLPParserInterface):
                     properties=custom_args,
                     output_format="json",
                     be_quiet=True,
+                    endpoint=endpoint,
                 ) as client:
                     ann = client.annotate(sentence)
 

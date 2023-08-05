@@ -1,3 +1,7 @@
+## Beta (0.0.22)
+
+- `ConstituencyParserCoreNLP` can now be set on a different endpoint.
+
 ## Beta (0.0.21)
 
 - `ConstituencyParserCoreNLP` is REALLY quiet now.
