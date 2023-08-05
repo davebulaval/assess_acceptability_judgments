@@ -55,6 +55,7 @@ class ConstituencyParserCoreNLP(CoreNLPParserInterface):
 
         :return: A list of str tree written in Standford constituency parsed tree format using bracket (i.e. "()").
         """
+        # Base on the documentation and this issue https://github.com/stanfordnlp/stanza/issues/478.
         custom_args = {}
         extraction_key = "parse"
         if binary_tree:
@@ -72,6 +73,7 @@ class ConstituencyParserCoreNLP(CoreNLPParserInterface):
                     memory='16G',
                     properties=custom_args,
                     output_format="json",
+                    be_quiet=True,
                 ) as client:
                     ann = client.annotate(sentence)
 
