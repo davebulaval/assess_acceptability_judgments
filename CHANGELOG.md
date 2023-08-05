@@ -1,3 +1,8 @@
+## Beta (0.0.25)
+
+- Fix CoreNLPClient call in `ConstituencyParserCoreNLP`. We were creating the server in a for loop which is faster that
+  the Client init thus it was creating multiple client instead of one.
+
 ## Beta (0.0.24)
 
 - Change the approach to pass endpoint and start_server as keyword arguments in the parse method

@@ -70,16 +70,16 @@ class ConstituencyParserCoreNLP(CoreNLPParserInterface):
         parsed_trees = []
         if self.verbose:
             sentences = tqdm(sentences, total=len(sentences), desc="Processing dataset into trees")
-        for sentence in sentences:
-            if len(sentence) > 0:
-                with CoreNLPClient(
-                    annotators=['tokenize', 'ssplit', 'pos', 'lemma', 'parse'],
-                    timeout=30000,
-                    memory='16G',
-                    properties=custom_args,
-                    output_format="json",
-                    **core_nlp_client_kwargs,
-                ) as client:
+        with CoreNLPClient(
+            annotators=['tokenize', 'ssplit', 'pos', 'lemma', 'parse'],
+            timeout=30000,
+            memory='16G',
+            properties=custom_args,
+            output_format="json",
+            **core_nlp_client_kwargs,
+        ) as client:
+            for sentence in sentences:
+                if len(sentence) > 0:
                     ann = client.annotate(sentence)
 
                     # Get the parsed sentence
@@ -87,9 +87,8 @@ class ConstituencyParserCoreNLP(CoreNLPParserInterface):
                     constituency_parse = parse_sentence[extraction_key]
 
                     parsed_trees.append(constituency_parse)
-            else:
-                parsed_trees.append([""])
-
+                else:
+                    parsed_trees.append([""])
         return parsed_trees
 
 
