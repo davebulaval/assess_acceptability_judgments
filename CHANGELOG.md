@@ -1,3 +1,8 @@
+## Beta (0.0.23)
+
+- `ConstituencyParserCoreNLP` has now the start_server option to start if not already started. Based
+  on [this](https://github.com/stanfordnlp/stanza/issues/810).
+
 ## Beta (0.0.22)
 
 - `ConstituencyParserCoreNLP` can now be set on a different endpoint.

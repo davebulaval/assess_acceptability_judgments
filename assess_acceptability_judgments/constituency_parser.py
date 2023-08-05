@@ -82,6 +82,7 @@ class ConstituencyParserCoreNLP(CoreNLPParserInterface):
                     output_format="json",
                     be_quiet=True,
                     endpoint=endpoint,
+                    start_server=stanza.server.StartServer.TRY_START,
                 ) as client:
                     ann = client.annotate(sentence)
 
