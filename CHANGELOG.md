@@ -1,4 +1,6 @@
-## dev
+## Beta (0.0.20)
+
+- `ConstituencyParserCoreNLP` is always quiet now.
 
 ## Beta (0.0.19)
 
