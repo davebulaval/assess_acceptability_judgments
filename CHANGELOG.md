@@ -1,5 +1,9 @@
 ## dev
 
+## Beta (0.0.18)
+
+- Now use Stanza CoreNLP interface to allow binary tree parsing in `ConstituencyParserCoreNLP`.
+
 ## Beta (0.0.17)
 
 - Add missing tags in `ConstituencyParserCoreNLP`.

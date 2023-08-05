@@ -4,12 +4,11 @@ import pkgutil
 from typing import List, Union, Optional
 
 import benepar
-import nltk
 import spacy
 import stanza
 import supar
-from nltk.parse.corenlp import CoreNLPServer, CoreNLPParser
 from stanza.models.constituency.tree_reader import read_trees
+from stanza.server import CoreNLPClient
 from supar import Parser
 from tqdm import tqdm
 
@@ -45,25 +44,47 @@ class ConstituencyParserCoreNLP(CoreNLPParserInterface):
         )
         self._tags_mapping = json.loads(data.decode("utf-8"))
 
-    def tree_parser_sentences(self, sentences: List[str]) -> List[List[Union[str, nltk.tree.tree.Tree]]]:
+        stanza.install_corenlp()
+
+    def tree_parser_sentences(self, sentences: List[str], binary_tree: bool = False) -> List[List[str]]:
         """
         Method to parse sentences into constituency tree.
 
         :param sentences: (list) A list of sentence to parse into trees.
-        :return: A list of NLTK parse tree.
-        """
-        with CoreNLPServer(path_to_jar=self.jar_file_name, path_to_models_jar=self.jar_model_file_name) as server:
-            parser = CoreNLPParser(url=server.url)
-            parsed_trees = []
-            if self.verbose:
-                sentences = tqdm(sentences, total=len(sentences), desc="Processing dataset into trees")
-            for sentence in sentences:
-                if len(sentence) > 0:
-                    parsed_trees.append(list(parser.raw_parse(sentence)))
-                else:
-                    parsed_trees.append([""])
+        :param binary_tree: (bool) Either or not to get the binary parse tree.
 
-            return parsed_trees
+        :return: A list of str tree written in Standford constituency parsed tree format using bracket (i.e. "()").
+        """
+        custom_args = {}
+        extraction_key = "parse"
+        if binary_tree:
+            custom_args.update({"parse.binaryTrees": True})
+            extraction_key = "binaryParse"
+
+        parsed_trees = []
+        if self.verbose:
+            sentences = tqdm(sentences, total=len(sentences), desc="Processing dataset into trees")
+        for sentence in sentences:
+            if len(sentence) > 0:
+                with CoreNLPClient(
+                    annotators=['tokenize', 'ssplit', 'pos', 'lemma', 'parse'],
+                    timeout=30000,
+                    memory='16G',
+                    properties=custom_args,
+                    output_format="json",
+                    be_quiet=self.verbose,
+                ) as client:
+                    ann = client.annotate(sentence)
+
+                    # Get the parsed sentence
+                    parse_sentence = ann["sentences"][0]
+                    constituency_parse = parse_sentence[extraction_key]
+
+                    parsed_trees.append(constituency_parse)
+            else:
+                parsed_trees.append([""])
+
+        return parsed_trees
 
 
 class ConstituencyParserSuPar:
