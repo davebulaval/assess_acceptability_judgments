@@ -1,3 +1,9 @@
+## Beta (0.0.26)
+
+- Fix CoreNLPClient call in `ConstituencyParserCoreNLP`. It seems like the context manager does not work will with
+  multiple initialization and call. Now instead, we instantiate and start the client in `__init__` and use it in the for
+  loop and close it on `__dell__`.
+
 ## Beta (0.0.25)
 
 - Fix CoreNLPClient call in `ConstituencyParserCoreNLP`. We were creating the server in a for loop which is faster that

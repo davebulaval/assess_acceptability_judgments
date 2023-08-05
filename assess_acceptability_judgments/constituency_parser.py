@@ -21,7 +21,13 @@ from .core_nlp_parser_interface import CoreNLPParserInterface
 
 
 class ConstituencyParserCoreNLP(CoreNLPParserInterface):
-    def __init__(self, verbose: bool = True, cache_path: Optional[str] = None) -> None:
+    def __init__(
+        self,
+        verbose: bool = True,
+        cache_path: Optional[str] = None,
+        binary_tree: bool = False,
+        **core_nlp_client_kwargs,
+    ) -> None:
         """
          Create a constituency parsing model that use CoreNLP constituency parser. To do so, we download the latest
         model from CoreNLP (i.e. 2018) as suggest by this Wiki
@@ -32,6 +38,9 @@ class ConstituencyParserCoreNLP(CoreNLPParserInterface):
         :param verbose: (bool) Either or not to be verbose during the download of CoreNLP model. Default to `True`.
         :param cache_path: (Optional[str]) Optional parameter to set a cache path to download the CoreNP model to.
             If the cache_path is not set, the model are downloaded in the default cache path i.e. `'.cache/aaj'`.
+        :param binary_tree: (bool) Either or not to get the binary parse tree. Default to false.
+        :param core_nlp_client_kwargs: A set of keyword arguments to be pass to the CoreNLPClient, such as be_quiet, or
+            start_over.
         """
         super().__init__(verbose, cache_path)
 
@@ -46,50 +55,66 @@ class ConstituencyParserCoreNLP(CoreNLPParserInterface):
 
         stanza.install_corenlp()
 
-    def tree_parser_sentences(
-        self, sentences: List[str], binary_tree: bool = False, **core_nlp_client_kwargs
-    ) -> List[List[str]]:
-        """
-        Method to parse sentences into constituency tree.
-
-        :param sentences: (list) A list of sentence to parse into trees.
-        :param binary_tree: (bool) Either or not to get the binary parse tree.
-        :param core_nlp_client_kwargs: A set of keyword arguments to be pass to the CoreNLPClient, such as be_quiet, or
-            start_over.
-
-        :return: A list of str tree written in Standford constituency parsed tree format using bracket (i.e. "()").
-        """
-        # Base on the documentation and this issue https://github.com/stanfordnlp/stanza/issues/478.
-
         custom_args = {}
-        extraction_key = "parse"
+        self.extraction_key = "parse"
         if binary_tree:
             custom_args.update({"parse.binaryTrees": True})
-            extraction_key = "binaryParse"
+            self.extraction_key = "binaryParse"
 
-        parsed_trees = []
-        if self.verbose:
-            sentences = tqdm(sentences, total=len(sentences), desc="Processing dataset into trees")
-        with CoreNLPClient(
+        self.client = CoreNLPClient(
             annotators=['tokenize', 'ssplit', 'pos', 'lemma', 'parse'],
             timeout=30000,
             memory='16G',
             properties=custom_args,
             output_format="json",
             **core_nlp_client_kwargs,
-        ) as client:
-            for sentence in sentences:
-                if len(sentence) > 0:
-                    ann = client.annotate(sentence)
+        )
+        self.start()
 
-                    # Get the parsed sentence
-                    parse_sentence = ann["sentences"][0]
-                    constituency_parse = parse_sentence[extraction_key]
+    def start(self) -> None:
+        """
+        Method to start the CoreNLP Client.
+        """
+        self.client.start()
 
-                    parsed_trees.append(constituency_parse)
-                else:
-                    parsed_trees.append([""])
+    def stop(self) -> None:
+        """
+        Method to stop the CoreNLP Client.
+        """
+        self.client.stop()
+
+    def tree_parser_sentences(self, sentences: List[str]) -> List[List[str]]:
+        """
+        Method to parse sentences into constituency tree.
+
+        :param sentences: (list) A list of sentence to parse into trees.
+
+        :return: A list of str tree written in Standford constituency parsed tree format using bracket (i.e. "()").
+        """
+        # Base on the documentation and this issue https://github.com/stanfordnlp/stanza/issues/478.
+
+        parsed_trees = []
+        if self.verbose:
+            sentences = tqdm(sentences, total=len(sentences), desc="Processing dataset into trees")
+        for sentence in sentences:
+            if len(sentence) > 0:
+                ann = self.client.annotate(sentence)
+
+                # Get the parsed sentence
+                parse_sentence = ann["sentences"][0]
+                constituency_parse = parse_sentence[self.extraction_key]
+
+                parsed_trees.append(constituency_parse)
+            else:
+                parsed_trees.append([""])
         return parsed_trees
+
+    def __del__(self) -> None:
+        """
+        Cleanup of the client by stopping it before.
+        """
+        if hasattr(self, 'client'):
+            self.stop()
 
 
 class ConstituencyParserSuPar:
