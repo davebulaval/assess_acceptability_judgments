@@ -1,3 +1,8 @@
+## Beta (0.0.27)
+
+- Add missing tag in tagset of Conll-U.
+
+
 ## Beta (0.0.26)
 
 - Fix CoreNLPClient call in `ConstituencyParserCoreNLP`. It seems like the context manager does not work will with
