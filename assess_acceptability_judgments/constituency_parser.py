@@ -136,7 +136,7 @@ class ConstituencyParserSuPar:
 
         self.verbose = verbose
 
-    def get_tree(self, sentence: supar.utils.Dataset) -> List[supar.utils.transform.TreeSentence]:
+    def get_tree(self, sentence: supar.utils.Dataset):
         """
         Interface method to get the tree depending on the sentence object.
 
@@ -154,7 +154,7 @@ class ConstituencyParserSuPar:
         """
         return self.process_pipeline.predict(sentence, lang="en", prob="False", verbose="False")
 
-    def tree_parser_sentences(self, sentences: List[str]) -> List[List[Union[str, supar.utils.transform.TreeSentence]]]:
+    def tree_parser_sentences(self, sentences: List[str]):
         """
         Method to parse sentences into constituency tree.
 
